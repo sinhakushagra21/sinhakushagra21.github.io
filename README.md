@@ -2,7 +2,7 @@
 
 Personal portfolio site with a RAG-powered chatbot that answers questions about my experience using my resume as the knowledge base.
 
-**Live**: [sinhakushagra21.github.io](https://sinhakushagra21.github.io) (after deploy)
+**Live**: deployed on Vercel (frontend) + Render (backend) — see [Deployment](#deployment-free-tier). Custom domain: `kushagrasinha.me`.
 
 ---
 
@@ -60,6 +60,7 @@ Open [http://localhost:3000](http://localhost:3000) — the chat connects to the
 |---|---|
 | `OPENAI_API_KEY` | OpenAI API key — used for embeddings (text-embedding-3-small) and generation (gpt-4o-mini) |
 | `ALLOWED_ORIGINS` | Comma-separated CORS origins, e.g. `https://yoursite.vercel.app` |
+| `NOTES_VIEW_KEY` | Secret to view the private visitor-notes inbox at `GET /api/notes?key=…` (footer → "· notes") |
 
 ### `frontend/.env.local`
 
@@ -69,38 +70,59 @@ Open [http://localhost:3000](http://localhost:3000) — the chat connects to the
 
 ---
 
-## Updating the Knowledge Base (Resume Changes)
+## Updating the Knowledge Base
 
-When you update your resume:
+The chatbot answers from curated markdown in `backend/data/knowledge/`
+(`knowledge-base.md`, `project-details.md`, `project-deep-dives.md`) — far richer
+and more accurate than the résumé. To update what the bot knows:
 
-1. Drop the new PDF at `backend/data/resume.pdf`
+1. Edit the markdown in `backend/data/knowledge/` (and `RELOCATION_CHUNK` / `VISA_CHUNK` in the build script for logistics)
 2. Run `cd backend && make embed`
 3. Commit `backend/data/knowledge_base.json`
-4. Push — Render redeploys automatically, picks up the new JSON
+4. Push — Render redeploys and picks up the new embeddings (or restart the backend locally)
 
-The embedding script (`backend/scripts/build_embeddings.py`) parses the PDF by section headers and embeds each chunk independently. Chunks: About, Tesla, Qualcomm, Zomato, Bluestone, FitGen.AI, Skills, Education.
+`build_embeddings.py` chunks the markdown by section heading and **strips
+interview-prep meta** (Be-ready-to-answer blocks, `(confirm…)` notes,
+`[placeholders]`, coaching asides) so none of that reaches a recruiter.
 
 ---
 
-## Deployment
+## Deployment (free tier)
 
-### Backend → Render
+> GitHub Pages **can't** host this — it needs Next.js SSR + a live FastAPI
+> backend. Use Vercel (frontend) + Render (backend). Deploy the **backend first**
+> so you have its URL for the frontend.
 
-1. Create a new **Web Service** at [render.com](https://render.com)
-2. Connect this repo, set root directory to `backend/`
-3. Build command: `pip install -r requirements.txt`
-4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add environment variable: `OPENAI_API_KEY=sk-...`
-6. After deploy, copy the service URL (e.g. `https://kushagra-portfolio.onrender.com`)
+### 1. Backend → Render
 
-### Frontend → Vercel
+This repo ships a `render.yaml` blueprint, so it's near one-click:
 
-1. Import this repo at [vercel.com/new](https://vercel.com/new)
-2. Set **Root Directory** to `frontend/`
-3. Add environment variable: `NEXT_PUBLIC_API_URL=https://your-render-service.onrender.com`
-4. Also set `ALLOWED_ORIGINS` in Render to your Vercel domain
+1. At [render.com](https://render.com): **New → Blueprint** → pick this repo (it reads `render.yaml`).
+2. After it provisions, set the three secrets in the service's **Environment** tab:
+   - `OPENAI_API_KEY` — your key
+   - `ALLOWED_ORIGINS` — your Vercel URL (fill once the frontend is up)
+   - `NOTES_VIEW_KEY` — a private secret for the notes inbox
+3. Copy the service URL, e.g. `https://kushagra-portfolio-api.onrender.com`.
+
+(Prefer manual setup? Root dir `backend`, build `pip install -r requirements.txt`,
+start `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.)
+
+### 2. Frontend → Vercel
+
+1. Import this repo at [vercel.com/new](https://vercel.com/new).
+2. **Root Directory:** `frontend` (Next.js auto-detected).
+3. Env var: `NEXT_PUBLIC_API_URL` = your Render URL from step 1.
+4. Deploy → copy the `*.vercel.app` URL, then set it as `ALLOWED_ORIGINS` in Render and redeploy the backend (CORS).
+5. In Vercel → project → **Analytics → Enable** (activates the built-in `@vercel/analytics`).
 
 Vercel auto-deploys on every push to `main`.
+
+### Notes
+
+- **Render free sleeps** after ~15 min idle → the first chat after a quiet spell is slow (~30–60 s cold start). Keep it warm with a free pinger (UptimeRobot / cron-job.org) hitting `…onrender.com/health` every ~10 min.
+- **Visitor notes are ephemeral** on Render free — `notes.json` resets on redeploy. Swap in a managed Postgres for durability.
+- **Calendly** scheduling is configured in `frontend/lib/calendly.ts` (`CALENDLY_URL`).
+- Only ongoing cost is OpenAI usage (tiny with `gpt-4o-mini` + the 10-req/hr limit).
 
 ---
 
