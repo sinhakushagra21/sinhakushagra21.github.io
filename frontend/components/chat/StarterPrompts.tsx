@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 
 const PROMPTS = [
-  { text: "What's your strongest project?", rotate: -2 },
-  { text: "How do you design for reliability at scale?", rotate: 1.4 },
-  { text: "Walk me through RolloutX", rotate: -1 },
+  { text: "Summarize your work experience", rotate: -2 },
+  { text: "What's your strongest project?", rotate: 1.4 },
+  { text: "How do you design for reliability at scale?", rotate: -1 },
   { text: "What did you ship at Tesla?", rotate: 2 },
   { text: "Open to H1B sponsorship & relocation?", rotate: -1.6 },
   { text: "Why should I interview you?", rotate: 1.2 },

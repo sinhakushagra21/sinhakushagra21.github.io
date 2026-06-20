@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 const HINTS = [
+  "ask about my work experience",
   "ask about Tesla",
-  "ask about FitGen.AI",
-  "ask about system design",
-  "ask about visa & H1B",
+  "ask how I design for scale",
+  "ask about RolloutX",
+  "ask about visa & relocation",
   "ask why I'd be a great hire",
 ];
 
@@ -75,7 +76,7 @@ export default function TypewriterHint() {
 
   return (
     <div className="text-center px-4" aria-live="polite">
-      <span className="display text-4xl md:text-5xl" style={{ color: "var(--ink-faint)" }}>
+      <span className="display text-2xl md:text-3xl" style={{ color: "var(--ink-faint)" }}>
         {text}
       </span>
       {!reduced && (
