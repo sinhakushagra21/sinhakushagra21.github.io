@@ -95,14 +95,11 @@ function scrollToChat(prompt: string) {
 function CardContent({ exp, seed, flat = false }: { exp: (typeof EXPERIENCES)[0]; seed: number; flat?: boolean }) {
   return (
     <PaperCard seed={seed} lined className={flat ? "" : "h-full"}>
-      <div
-        className={flat ? "p-6" : "p-6 md:p-7 h-full overflow-y-auto"}
-        data-lenis-prevent={flat ? undefined : ""}
-      >
-        <div className="flex items-start justify-between gap-4 mb-5">
+      <div className={flat ? "p-6" : "p-6 md:p-7 h-full overflow-hidden"}>
+        <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex items-center gap-3">
             <div
-              className="w-12 h-12 flex items-center justify-center text-2xl shrink-0 display"
+              className="w-11 h-11 flex items-center justify-center text-xl shrink-0 display"
               style={{
                 background: "var(--paper-card-2)",
                 color: "var(--ink)",
@@ -115,10 +112,10 @@ function CardContent({ exp, seed, flat = false }: { exp: (typeof EXPERIENCES)[0]
               {exp.logo}
             </div>
             <div>
-              <h3 className="display text-3xl leading-none" style={{ color: "var(--ink)" }}>
+              <h3 className="display text-2xl leading-none" style={{ color: "var(--ink)" }}>
                 {exp.company}
               </h3>
-              <p className="hand text-base" style={{ color: "var(--ink-soft)" }}>
+              <p className="hand text-sm" style={{ color: "var(--ink-soft)" }}>
                 {exp.role}
               </p>
             </div>
@@ -131,20 +128,20 @@ function CardContent({ exp, seed, flat = false }: { exp: (typeof EXPERIENCES)[0]
           </div>
         </div>
 
-        <ul className="space-y-3 mb-5">
+        <ul className="space-y-2 mb-3">
           {exp.highlights.map((h, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
+            <li key={i} className="flex items-start gap-2 text-[13px] leading-snug" style={{ color: "var(--ink-soft)" }}>
               <span className="hand shrink-0" style={{ color: "var(--navy)", fontWeight: 700 }}>✓</span>
               {h}
             </li>
           ))}
         </ul>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-3">
           {exp.chips.map((chip) => (
             <span
               key={chip}
-              className="hand text-sm px-2.5 py-0.5"
+              className="hand text-xs px-2 py-0.5"
               style={{
                 background: "var(--paper-card-2)",
                 border: "1.5px solid var(--pencil)",

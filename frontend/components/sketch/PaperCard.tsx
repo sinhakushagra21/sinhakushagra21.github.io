@@ -89,7 +89,7 @@ export default function PaperCard({
 
       <SketchBorder seed={seed} color={ink} draw={draw} />
 
-      <div style={{ position: "relative", zIndex: 1, paddingLeft: lined ? 14 : undefined }}>
+      <div style={{ position: "relative", zIndex: 1, height: "100%", paddingLeft: lined ? 14 : undefined }}>
         {children}
       </div>
     </div>
