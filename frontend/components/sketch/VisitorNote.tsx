@@ -22,16 +22,31 @@ export default function VisitorNote() {
     const id = setInterval(() => setTime(fmt()), 30_000);
 
     let active = true;
-    fetch("https://ipwho.is/")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!active || !d || d.success === false) return;
-        if (d.city && d.country) setPlace(`${d.city}, ${d.country}`);
-        else if (d.country) setPlace(d.country);
-      })
-      .catch(() => {
+    (async () => {
+      // 1) same-origin Vercel geo — survives privacy browsers (Brave/uBlock)
+      try {
+        const r = await fetch("/api/geo");
+        if (r.ok) {
+          const d = await r.json();
+          if (active && (d.city || d.country)) {
+            setPlace(d.city && d.country ? `${d.city}, ${d.country}` : d.city || d.country);
+            return;
+          }
+        }
+      } catch {
+        /* ignore, try fallback */
+      }
+      // 2) third-party fallback (works on non-blocking browsers / localhost)
+      try {
+        const r = await fetch("https://ipwho.is/");
+        const d = await r.json();
+        if (active && d?.success !== false && (d.city || d.country)) {
+          setPlace(d.city && d.country ? `${d.city}, ${d.country}` : d.city || d.country);
+        }
+      } catch {
         /* geolocation blocked — just greet without a place */
-      });
+      }
+    })();
 
     return () => {
       active = false;
