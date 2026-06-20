@@ -1,0 +1,432 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKETCH-NOTE DESIGN SYSTEM — hand-drawn portfolio
+   Light = paper + ink. Dark = chalkboard + chalk.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Light mode: notebook paper */
+  --paper: #faf9f5;
+  --paper-aged: #f4f1e8;
+  --paper-card: #fffdf7;
+  --paper-card-2: #fef9ec; /* sticky-note warm */
+
+  --ink: #2b2b2b;
+  --ink-strong: #1a1a1a;
+  --ink-soft: #4a4a47;
+  --ink-faint: #6f6d66;
+
+  --navy: #2e5c8a;
+  --red: #c0392b;
+  --highlighter: #ffe76b;
+
+  --pencil: #b9b4a8;        /* hand-drawn rule / hairline */
+  --pencil-soft: #d8d3c7;
+
+  /* ── Legacy aliases (so any unmigrated style still resolves) ── */
+  --canvas: var(--paper);
+  --surface-soft: var(--paper-aged);
+  --surface-card: var(--paper-card);
+  --surface-card-strong: var(--paper-aged);
+  --surface-dark: #25282c;
+  --surface-dark-elevated: #2f3338;
+  --surface-dark-soft: #2a2d31;
+
+  --body-strong: var(--ink-strong);
+  --body: var(--ink-soft);
+  --muted: var(--ink-faint);
+  --muted-soft: #908d84;
+  --hairline: var(--pencil-soft);
+  --hairline-soft: #e6e2d8;
+
+  --primary: var(--red);
+  --primary-active: #9b2d20;
+  --primary-disabled: var(--pencil-soft);
+  --on-primary: #fffdf7;
+  --on-dark: #edeae2;
+  --on-dark-soft: #a8a49a;
+
+  --accent-teal: var(--navy);
+  --accent-amber: var(--highlighter);
+  --success: #4f8a5b;
+  --warning: #c9a227;
+  --error: var(--red);
+
+  --glow-primary: rgba(192, 57, 43, 0.12);
+  --glow-primary-strong: rgba(192, 57, 43, 0.22);
+  --glow-teal: rgba(46, 92, 138, 0.1);
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-card);
+  --card-foreground: var(--ink);
+  --border: var(--pencil-soft);
+  --ring: var(--red);
+
+  /* highlighter blend behavior */
+  --highlighter-blend: multiply;
+}
+
+/* Dark mode: chalkboard */
+.dark {
+  --paper: #1c2024;
+  --paper-aged: #20252a;
+  --paper-card: #242a30;
+  --paper-card-2: #2a3036;
+
+  --ink: #edeae2;
+  --ink-strong: #fbf9f3;
+  --ink-soft: #cfccc3;
+  --ink-faint: #9c988e;
+
+  --navy: #7ba7d0;
+  --red: #e8786b;
+  --highlighter: #d9c84a;
+
+  --pencil: #545a61;
+  --pencil-soft: #3a4046;
+
+  --surface-dark: #14171a;
+  --surface-dark-elevated: #20252a;
+  --surface-dark-soft: #181c20;
+
+  --muted-soft: #7c7870;
+  --hairline-soft: #2c3137;
+  --on-primary: #1a1a1a;
+  --on-dark: #edeae2;
+  --on-dark-soft: #9c988e;
+
+  --glow-primary: rgba(232, 120, 107, 0.1);
+  --glow-primary-strong: rgba(232, 120, 107, 0.22);
+  --glow-teal: rgba(123, 167, 208, 0.08);
+
+  --highlighter-blend: screen;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-canvas: var(--paper);
+  --color-paper: var(--paper);
+  --color-paper-aged: var(--paper-aged);
+  --color-paper-card: var(--paper-card);
+  --color-surface-card: var(--paper-card);
+  --color-surface-dark: var(--surface-dark);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-body: var(--ink-soft);
+  --color-muted: var(--ink-faint);
+  --color-muted-soft: var(--muted-soft);
+  --color-navy: var(--navy);
+  --color-red: var(--red);
+  --color-highlighter: var(--highlighter);
+  --color-pencil: var(--pencil);
+  --color-primary: var(--red);
+  --color-primary-active: var(--primary-active);
+  --color-hairline: var(--pencil-soft);
+  --color-on-dark: var(--on-dark);
+  --color-accent-teal: var(--navy);
+  --color-accent-amber: var(--highlighter);
+  --color-error: var(--red);
+
+  --font-sans: var(--font-nunito);
+  --font-hand: var(--font-kalam);
+  --font-display: var(--font-caveat);
+  --font-mono: var(--font-jetbrains);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-nunito), "Nunito", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Display / headings = handwriting marker */
+  h1, h2, h3 {
+    font-family: var(--font-caveat), "Caveat", "Comic Sans MS", cursive;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+
+  code, pre {
+    font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--pencil);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+  ::selection {
+    background: var(--highlighter);
+    color: var(--ink-strong);
+  }
+
+  :focus-visible {
+    outline: 2px dashed var(--red);
+    outline-offset: 3px;
+  }
+}
+
+/* ── Paper texture (ruled notebook lines + grain) ──────────────────────────── */
+
+.paper-bg {
+  position: relative;
+}
+
+/* ruled lines */
+.paper-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    var(--pencil-soft) 31px,
+    var(--pencil-soft) 32px
+  );
+  opacity: 0.45;
+}
+
+.dark .paper-bg::after {
+  opacity: 0.22;
+}
+
+/* grain */
+.paper-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 220px 220px;
+}
+
+.dark .paper-bg::before {
+  opacity: 0.06;
+}
+
+/* ── Sketch utilities ──────────────────────────────────────────────────────── */
+
+/* highlighter swipe behind text — a near-full-height yellow band so the text
+   always sits ON the marker (readable in both light paper and dark chalkboard) */
+.highlight-mark {
+  background-image: linear-gradient(
+    transparent 8%,
+    var(--highlighter) 8%,
+    var(--highlighter) 92%,
+    transparent 92%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  mix-blend-mode: var(--highlighter-blend);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+/* on the dark chalkboard, ink-dark text on the yellow reads far better than
+   chalk-white washed out by a screen blend */
+.dark .highlight-mark {
+  color: #23211a;
+  mix-blend-mode: normal;
+}
+
+/* tape strip (for paper cards) */
+.tape {
+  position: absolute;
+  width: 64px;
+  height: 22px;
+  background: rgba(255, 231, 107, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.dark .tape {
+  background: rgba(217, 200, 74, 0.18);
+}
+
+/* hand-drawn dashed divider fallback */
+.sketch-rule {
+  height: 0;
+  border: none;
+  border-top: 2px dashed var(--pencil);
+  opacity: 0.6;
+}
+
+/* mono label, scrawled-tag style */
+.scrawl-label {
+  font-family: var(--font-kalam), "Kalam", cursive !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: var(--red) !important;
+  display: inline-block !important;
+  transform: rotate(-2deg);
+}
+
+.hand {
+  font-family: var(--font-kalam), "Kalam", cursive;
+}
+.display {
+  font-family: var(--font-caveat), "Caveat", cursive;
+}
+
+/* gentle continuous wobble for "alive" hand feel */
+@keyframes hand-wobble {
+  0%, 100% { transform: rotate(-0.4deg); }
+  50% { transform: rotate(0.4deg); }
+}
+.wobble {
+  animation: hand-wobble 6s ease-in-out infinite;
+}
+
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.float-bob { animation: float-bob 5s ease-in-out infinite; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.9) rotate(0deg); }
+  50% { opacity: 0.7; transform: scale(1.1) rotate(20deg); }
+}
+.twinkle { animation: twinkle 3.5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-bob, .twinkle { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wobble { animation: none; }
+}
+
+/* ── Chalkboard scope (the chat surface) ───────────────────────────────────────
+   Re-maps the design tokens to a slate board + chalk so every chat sub-component
+   inherits the look without per-component rewrites. Fixed palette in BOTH site
+   themes (green-slate, distinct from the blue-slate dark page) so the board
+   never blends into a dark page. */
+.chalkboard {
+  --paper: #29332c;
+  --paper-aged: #313d34;
+  --paper-card: #29332c;
+  --paper-card-2: #344036;
+
+  --ink: #f2efe6;
+  --ink-strong: #ffffff;
+  --ink-soft: #d7d3c6;
+  --ink-faint: #a7a698;
+
+  --red: #ef9a8d;
+  --navy: #94bcdb;
+  --highlighter: #e8d98a;
+
+  --pencil: #6f756a;
+  --pencil-soft: #555c50;
+  --muted-soft: #8a8c80;
+
+  --surface-dark: #1d241f;
+  --highlighter-blend: screen;
+
+  color: var(--ink);
+}
+
+/* chalk reads from color + handwriting font alone — no text-shadow
+   (a soft shadow re-rasterizes on every streamed token and flickers). */
+
+/* ── Chat prose styles (notebook ink) ──────────────────────────────────────── */
+
+.chat-prose p { margin: 0 0 0.7em; }
+.chat-prose p:last-child { margin-bottom: 0; }
+.chat-prose ul { list-style: none; padding-left: 1.1em; margin: 0 0 0.4em; }
+.chat-prose ul li { position: relative; }
+.chat-prose ul li::before {
+  content: "–";
+  position: absolute;
+  left: -1.1em;
+  color: var(--red);
+  font-family: var(--font-kalam), cursive;
+}
+.chat-prose ol { list-style: decimal; padding-left: 1.25em; margin: 0 0 0.4em; }
+.chat-prose li { margin-bottom: 0.2em; line-height: 1.55; }
+.chat-prose em {
+  font-style: normal;
+  color: var(--navy);
+  font-family: var(--font-kalam), cursive;
+}
+.chat-prose strong { font-weight: 700; color: var(--ink-strong); }
+.chat-prose code {
+  background: var(--paper-aged);
+  color: var(--red);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+.chat-prose pre {
+  background: var(--surface-dark);
+  border-radius: 8px;
+  overflow: auto;
+  margin: 0.7em 0;
+  padding: 0.5em 0.75em;
+}
+.chat-prose pre code {
+  background: transparent;
+  color: var(--on-dark);
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.85em;
+}
+.chat-prose blockquote {
+  border-left: 3px solid var(--highlighter);
+  padding-left: 1em;
+  color: var(--ink-faint);
+  margin: 0.7em 0;
+}
+.chat-prose h1,.chat-prose h2,.chat-prose h3 {
+  margin: 1em 0 0.4em;
+  font-size: 1.15em;
+  font-family: var(--font-kalam), cursive;
+  letter-spacing: normal;
+  font-weight: 700;
+}
+
+/* ink-writing caret while streaming */
+@keyframes ink-caret {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.ink-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  background: var(--red);
+  animation: ink-caret 0.9s steps(2) infinite;
+}

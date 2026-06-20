@@ -1,0 +1,31 @@
+# Secrets
+backend/.env
+frontend/.env.local
+**/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# private visitor notes (not committed)
+backend/data/notes.json
