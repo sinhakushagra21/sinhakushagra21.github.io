@@ -55,13 +55,14 @@ function useContainerRoam(
   }, [animate, active]);
 }
 
-function BoySvg({ facingRef, writing }: { facingRef: React.MutableRefObject<number>; writing: boolean }) {
-  const [facing, setFacing] = useState(1);
+function BoySvg({ facingRef, writing, stationary = false }: { facingRef: React.MutableRefObject<number>; writing: boolean; stationary?: boolean }) {
+  const [facing, setFacing] = useState(stationary ? -1 : 1);
   useEffect(() => {
+    if (stationary) { setFacing(-1); return; } // stand at the right edge, face the board
     if (writing) { setFacing(1); return; } // face the board while writing
     const id = setInterval(() => setFacing(facingRef.current), 200);
     return () => clearInterval(id);
-  }, [facingRef, writing]);
+  }, [facingRef, writing, stationary]);
 
   return (
     <svg
@@ -146,7 +147,7 @@ function BoySvg({ facingRef, writing }: { facingRef: React.MutableRefObject<numb
  * chalk while the assistant is streaming. Hidden under reduced-motion;
  * static (no roaming) on touch / narrow screens.
  */
-export default function DoodleMascot({ writing = false }: { writing?: boolean }) {
+export default function DoodleMascot({ writing = false, stationary = false }: { writing?: boolean; stationary?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const facingRef = useRef(1);
   const reduced = usePrefersReducedMotion();
@@ -158,15 +159,15 @@ export default function DoodleMascot({ writing = false }: { writing?: boolean })
     setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 1);
   }, []);
 
-  // stand still (don't roam) while writing
-  useContainerRoam(containerRef, facingRef, mounted && !reduced && !isMobile && !writing);
+  // roam only when free-standing; stationary mode (board edge) never roams
+  useContainerRoam(containerRef, facingRef, mounted && !reduced && !isMobile && !writing && !stationary);
 
   if (reduced) return null;
 
   return (
-    <div style={{ width: "100%", height: 84, position: "relative", display: "flex", justifyContent: "center" }}>
+    <div style={{ width: stationary ? 70 : "100%", height: 84, position: "relative", display: "flex", justifyContent: "center" }}>
       <div ref={containerRef} style={{ width: 70, height: 84, willChange: "transform" }}>
-        <BoySvg facingRef={facingRef} writing={writing} />
+        <BoySvg facingRef={facingRef} writing={writing} stationary={stationary} />
       </div>
     </div>
   );

@@ -235,6 +235,12 @@ export default function ChatContainer() {
         <span style={{ width: 18, height: 7, borderRadius: 2, background: "#8a6b4a", marginLeft: "auto" }} />
       </div>
 
+      {/* Doodle boy stands at the right edge and "writes" on the board —
+          absolutely placed so it never steals height from the conversation. */}
+      <div aria-hidden className="absolute z-[5] pointer-events-none" style={{ right: 4, bottom: 84 }}>
+        <DoodleMascot writing={loading} stationary />
+      </div>
+
       {/* recruiter mode: paste-a-JD overlay */}
       {tailorOpen && (
         <div
@@ -330,11 +336,6 @@ export default function ChatContainer() {
           </div>
         </div>
       )}
-
-      {/* Doodle boy writes on the board while answering */}
-      <div className="shrink-0 -mb-1">
-        <DoodleMascot writing={loading} />
-      </div>
 
       <div className="shrink-0">
         <ChatInput
