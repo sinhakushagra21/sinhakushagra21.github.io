@@ -24,12 +24,13 @@ const PROJECTS = [
     tagline: "Distributed feature-flag platform",
     period: "May 2026 – Jun 2026",
     description:
-      "Separate control and data planes: a transactional outbox publishes immutable, versioned snapshots to Kafka, and stateless data-plane replicas evaluate flags in-process over lock-free snapshots.",
+      "A self-hostable feature-flag platform in the LaunchDarkly / Statsig class, built for huge flag counts and heavy read traffic. I split authoring (control plane) from evaluation (a stateless data plane) so flags are checked in-process through an SDK — no network round-trip per check.",
     tech: ["Go", "gRPC", "PostgreSQL", "Kafka", "Redis", "Prometheus", "OpenTelemetry", "Kubernetes", "Terraform"],
     highlights: [
-      "211 ns per evaluation (~4.7M evals/sec per core) over lock-free in-process snapshots",
-      "Deterministic sticky % rollouts via MurmurHash3 — held within ±1% across 1,000,000 keys",
-      "Sub-second kill switches + last-known-good SDK fallback so flags keep evaluating during outages",
+      "A flag check takes about 211 nanoseconds over a lock-free in-memory snapshot — roughly 4.7M evaluations a second, per core.",
+      "A transactional outbox ships versioned snapshots to Kafka, so a config change can't half-apply — no “database says one thing, cache says another” bugs.",
+      "Percentage rollouts are deterministic and sticky (MurmurHash3) — property-tested to hold within ±1% across a million keys.",
+      "Sub-second kill switch, plus a last-known-good fallback so the SDK keeps serving flags even if the control plane or Kafka goes down.",
     ],
     askPrompt: "How does RolloutX evaluate flags so fast?",
     repo: "github.com/sinhakushagra21/RolloutX",
@@ -41,12 +42,12 @@ const PROJECTS = [
     tagline: "Stateful multi-agent AI coach",
     period: "Jan 2026 – Apr 2026",
     description:
-      "An LLM router sends each turn to specialist diet and workout tools, with vector-search RAG over saved plans and a plan evaluator + refinement loop, all under scope guardrails. Backed by 220+ tests.",
+      "A multi-agent fitness coach that remembers you across sessions. A cheap, fast model routes every message to the right specialist tool before any expensive call — which cut model costs roughly 90% versus always reaching for the big model.",
     tech: ["Python", "LangGraph", "OpenAI API", "MongoDB Atlas", "Redis", "RAG", "LangSmith"],
     highlights: [
-      "LLM router dispatches each turn to specialist diet & workout agents",
-      "Vector-search RAG over saved plans for grounded, personalized recommendations",
-      "Plan evaluator with a refinement loop + scope guardrails, backed by 220+ tests",
+      "Each domain is a multi-turn state machine that walks you from profile → plan → confirmed, with a personal RAG over your own saved plans.",
+      "A plan evaluator scores every draft for completeness, safety, and personalization, then runs a refinement loop until it passes.",
+      "220+ tests (all mocked, no live DB), plus guardrails that politely turn down anything off-topic.",
     ],
     askPrompt: "Walk me through the fitness planner",
     repo: "github.com/sinhakushagra21/fitgenai",
@@ -58,11 +59,12 @@ const PROJECTS = [
     tagline: "Relational DB for grocery delivery",
     period: "Sep 2024 – Dec 2024",
     description:
-      "A normalized relational schema covering customers, orders, inventory, delivery operations, and payment workflows for a fast grocery-delivery platform.",
+      "A full relational database for a grocery-delivery service — the schema, the business logic, and the access control, end to end in Oracle and PL/SQL.",
     tech: ["Oracle", "PL/SQL", "SQL"],
     highlights: [
-      "Stored procedures, reporting views & delivery-slot validation logic in PL/SQL",
-      "Role-based access controls across the schema",
+      "Normalized schema across customers, orders, inventory, warehouses, and delivery zones — orders are fulfilled from the nearest warehouse.",
+      "PL/SQL handles order placement, delivery-slot validation, and stock checks, with reporting views layered on top.",
+      "Three least-privilege roles, so warehouse staff manage stock but never touch sensitive customer data.",
     ],
     askPrompt: "Tell me about the Fast Commerce DB project",
     repo: "github.com/sinhakushagra21/fast-commerce-sql-dmdd",
@@ -74,12 +76,12 @@ const PROJECTS = [
     tagline: "AI résumé-tailoring platform",
     period: "2026",
     description:
-      "Tailors a master résumé to a job description through an LLM pipeline that holds three hiring lenses at once — ATS, recruiter, and hiring-manager — with honest-gap disclosure, a clean PDF export, and a Chrome extension that auto-fills application forms.",
+      "A full-stack tool that tailors my master résumé to a specific job, scores it the way real hiring screens would, and exports a clean PDF — plus a Chrome extension that auto-fills application forms.",
     tech: ["Python", "FastAPI", "Next.js", "LiteLLM", "Playwright", "Chrome Extension"],
     highlights: [
-      "Two-pass LLM: a tailoring pass plus an independent fresh-eyes eval that scores against ATS / recruiter / hiring-manager screens",
-      "Deterministic guards enforce truthfulness — no fabricated tech, preserves dates & IDs",
-      "Semantic keyword match + honest-gap panel; PDF export and a form-autofill Chrome extension",
+      "Two LLM passes: one rewrites against ATS, recruiter, and hiring-manager lenses; a second fresh-eyes pass scores the result independently, so it isn't grading its own work.",
+      "A deterministic guard layer keeps it honest — it won't invent tech or inflate claims, and it surfaces real gaps instead of hiding them.",
+      "Semantic keyword matching credits skills I genuinely have even when the job post words them differently.",
     ],
     askPrompt: "Tell me about Resume Tailor",
     repo: "github.com/sinhakushagra21/resume-tailor",
@@ -106,6 +108,7 @@ function ProjectCard({ project, index }: { project: (typeof PROJECTS)[0]; index:
       initial={{ opacity: 0, y: 50, rotate: project.rotate * 3 }}
       animate={inView ? { opacity: 1, y: 0, rotate: project.rotate } : {}}
       transition={{ duration: 0.7, delay: index * 0.12, ease: EASE }}
+      whileHover={{ rotate: 0, y: -6, scale: 1.015, transition: { duration: 0.25, ease: EASE } }}
     >
       <PaperCard seed={400 + index} draw lined className="h-full">
         <div className="p-6 flex flex-col gap-4">
@@ -140,7 +143,7 @@ function ProjectCard({ project, index }: { project: (typeof PROJECTS)[0]; index:
             {project.tech.map((t) => (
               <span
                 key={t}
-                className="hand text-sm px-2.5 py-0.5"
+                className="sketch-chip hand text-sm px-2.5 py-0.5"
                 style={{
                   background: "var(--paper-card-2)",
                   border: "1.5px solid var(--pencil)",

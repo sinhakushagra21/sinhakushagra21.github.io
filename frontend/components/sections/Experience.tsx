@@ -26,11 +26,11 @@ const EXPERIENCES = [
     logo: "T",
     color: "#cc0000",
     highlights: [
-      "NL → Elasticsearch DSL dashboard platform (FastAPI + LangGraph) with deterministic templates + human-in-the-loop — 90% faster widget creation",
-      "Conversational search across assets, cases & tickets (Elasticsearch, Redis, LangGraph) holding session context — 80% retrieval accuracy gain",
-      "RAG email-generation API (ClickHouse vector search + embeddings) drafting context-aware emails from historical cases",
-      "Dataset onboarding service: Excel specs → validated JSON schemas (FastAPI, Pydantic, concurrency) — days to under an hour",
-      "Idempotent ticket agent on Microsoft Teams — backend-confirmed creation, no duplicates or hallucinated confirmations",
+      "Built an AI agent that turns plain English into real Elasticsearch dashboards — non-experts stopped filing tickets and widget setup got about 90% faster.",
+      "Made it safe by design: the model fills vetted query templates and a human confirms before anything runs, so it can't fire off a broken or wrong query.",
+      "Built a conversational search agent with Redis-backed memory that searches assets, cases, and tickets and actually remembers context between turns (~80% better retrieval).",
+      "Shipped a RAG email-draft API on a ClickHouse vector store, plus an idempotent Teams bot that only confirms a ticket once a real ID comes back — no duplicates, no fake “done”s.",
+      "Turned dataset onboarding from a multi-day manual slog into under an hour (Excel specs → Pydantic-validated JSON).",
     ],
     chips: ["LangGraph", "FastAPI", "Elasticsearch", "ClickHouse", "RAG"],
     askPrompt: "What did you build at Tesla?",
@@ -43,8 +43,8 @@ const EXPERIENCES = [
     logo: "Q",
     color: "#3253a0",
     highlights: [
-      "Multithreaded XML ETL pipeline (Python, NumPy, MongoDB, Elasticsearch) over hundreds of 8–9 GB GPU capture files — weeks to ~4 days",
-      "Replaced FIFO CI/CD with a RabbitMQ priority scheduler wired into Jenkins — auto-promoted urgent builds, removed manual queue intervention",
+      "Took the graphics team's 8–9 GB GPU capture files from a weeks-long serial parse down to about four days with a multithreaded pipeline into MongoDB + Elasticsearch — and finally made that data searchable.",
+      "Swapped their first-come-first-served build queue for a RabbitMQ priority scheduler on Jenkins, so urgent releases jump the line automatically instead of someone babysitting the queue.",
     ],
     chips: ["Python", "NumPy", "MongoDB", "RabbitMQ", "Jenkins"],
     askPrompt: "What did you do at Qualcomm?",
@@ -57,9 +57,9 @@ const EXPERIENCES = [
     logo: "Z",
     color: "#e23744",
     highlights: [
-      "Event-driven inventory alerting service (Go, Kafka, Redis, MySQL) consuming demand forecasts — fewer stock-outs across cloud kitchens",
-      "Owned Zomato Gold payment integrations (Go, DynamoDB, gRPC, Protobuf) with retries, circuit breakers & idempotent writes — 100K+ daily transactions",
-      "Built Zomato Instant Admin APIs with JWT + RBAC — sales teams onboard kitchens, menus & pricing without engineer-run SQL",
+      "Owned the Zomato Gold payment backend in Go — idempotent writes, retries, and circuit breakers kept 100K+ daily transactions reliable even when a payment provider got flaky.",
+      "Built an event-driven alerting service (Go + Kafka) that warned cloud kitchens before they ran out of stock.",
+      "Gave the sales team self-serve onboarding APIs behind JWT + role-based access, so they could set up kitchens, menus, and pricing without an engineer running SQL by hand.",
     ],
     chips: ["Go", "gRPC", "Kafka", "DynamoDB", "Redis"],
     askPrompt: "How did you scale payments at Zomato?",
@@ -72,8 +72,8 @@ const EXPERIENCES = [
     logo: "B",
     color: "#1a6b8a",
     highlights: [
-      "Engineered catalog & pricing pipelines (Java, PostgreSQL) with transactional rollback and idempotent batch processing across 10,000+ SKUs",
-      "Prevented partial catalog updates and kept data consistent through high-volume pricing batches",
+      "Built catalog and pricing pipelines in Java/Postgres where each batch either fully applied or rolled back — no more half-updated prices across 10,000+ SKUs.",
+      "Added monitoring that caught failures early instead of hours after the fact, and made re-running a failed batch safe.",
     ],
     chips: ["Java", "PostgreSQL", "SQL"],
     askPrompt: "What did you build at Bluestone?",
@@ -141,7 +141,7 @@ function CardContent({ exp, seed, flat = false }: { exp: (typeof EXPERIENCES)[0]
           {exp.chips.map((chip) => (
             <span
               key={chip}
-              className="hand text-xs px-2 py-0.5"
+              className="sketch-chip hand text-xs px-2 py-0.5"
               style={{
                 background: "var(--paper-card-2)",
                 border: "1.5px solid var(--pencil)",
