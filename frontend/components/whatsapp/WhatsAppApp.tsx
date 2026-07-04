@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import ChatPane from "./ChatPane";
 import StatusViewer from "./StatusViewer";
 import ActivityPanel from "./ActivityPanel";
+import CallScreen from "./CallScreen";
 import { CHATS } from "./data";
 import { logEvent } from "@/lib/events";
 
@@ -13,6 +14,7 @@ export default function WhatsAppApp() {
   const [mobilePane, setMobilePane] = useState(false); // mobile: showing conversation vs list
   const [statusOpen, setStatusOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
+  const [callOpen, setCallOpen] = useState(false);
 
   const chat = CHATS.find((c) => c.id === activeId) ?? CHATS[0];
 
@@ -41,6 +43,7 @@ export default function WhatsAppApp() {
 
       <StatusViewer open={statusOpen} onClose={() => setStatusOpen(false)} onChat={() => openChat("ai")} />
       <ActivityPanel open={activityOpen} onClose={() => setActivityOpen(false)} />
+      <CallScreen open={callOpen} onClose={() => setCallOpen(false)} />
 
 
       {/* conversation pane */}
@@ -51,6 +54,7 @@ export default function WhatsAppApp() {
             chat={chat}
             onBack={() => setMobilePane(false)}
             onOpenAI={() => openChat("ai")}
+            onCall={() => setCallOpen(true)}
           />
         </div>
       </div>

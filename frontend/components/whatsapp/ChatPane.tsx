@@ -11,9 +11,10 @@ interface ChatPaneProps {
   chat: WAChat;
   onBack: () => void;
   onOpenAI: () => void;
+  onCall: () => void;
 }
 
-export default function ChatPane({ chat, onBack, onOpenAI }: ChatPaneProps) {
+export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPaneProps) {
   return (
     <div className="flex flex-col h-full">
       {/* header */}
@@ -31,7 +32,13 @@ export default function ChatPane({ chat, onBack, onOpenAI }: ChatPaneProps) {
           </div>
         </div>
         <div className="flex items-center gap-5" style={{ color: "var(--wa-text2)" }}>
-          <Phone size={18} className="hidden sm:block" />
+          {chat.ai ? (
+            <button onClick={onCall} aria-label="Voice call with the AI" title="Voice call" className="transition-colors hover:text-[color:var(--wa-accent)]">
+              <Phone size={19} />
+            </button>
+          ) : (
+            <Phone size={18} className="hidden sm:block" />
+          )}
           <Search size={18} className="hidden sm:block" />
           <MoreVertical size={18} />
         </div>
