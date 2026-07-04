@@ -1,8 +1,11 @@
 "use client";
 
-import { Search, Pin, BadgeCheck } from "lucide-react";
+import { Search, Pin, BadgeCheck, Globe } from "lucide-react";
 import { CHATS, WAChat } from "./data";
 import WAAvatar from "./WAAvatar";
+import { useLang, LANGS } from "@/lib/i18n";
+
+const NAME_KEYS = ["recruiter", "experience", "projects", "skills", "education", "contact"];
 
 function Avatar({ chat, size = 49 }: { chat: WAChat; size?: number }) {
   return <WAAvatar emoji={chat.avatar} bg={chat.avatarBg} size={size} />;
@@ -16,6 +19,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivity }: SidebarProps) {
+  const { t, lang, setLang } = useLang();
   return (
     <div className="flex flex-col h-full" style={{ background: "var(--wa-panel)" }}>
       {/* header */}
@@ -32,9 +36,24 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
           <div className="min-w-0">
             <div className="font-semibold truncate" style={{ fontSize: 15 }}>Kushagra Sinha</div>
             <button onClick={onOpenStatus} className="truncate text-left" style={{ fontSize: 12, color: "var(--wa-accent)" }}>
-              tap for my status →
+              {t("tapStatus")}
             </button>
           </div>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0" style={{ color: "var(--wa-text2)" }} title="Language">
+          <Globe size={16} />
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            aria-label="Language"
+            className="bg-transparent outline-none cursor-pointer"
+            style={{ fontSize: 12.5, color: "var(--wa-text2)" }}
+          >
+            {LANGS.map((l) => (
+              <option key={l.code} value={l.code} style={{ color: "#000" }}>{l.label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -42,7 +61,7 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
       <div className="px-3 py-2 shrink-0">
         <div className="flex items-center gap-3 rounded-lg px-3" style={{ background: "var(--wa-bg)", height: 36 }}>
           <Search size={16} style={{ color: "var(--wa-text2)" }} />
-          <span style={{ fontSize: 13, color: "var(--wa-text2)" }}>Pick a chat to explore →</span>
+          <span style={{ fontSize: 13, color: "var(--wa-text2)" }}>{t("searchHint")}</span>
         </div>
       </div>
 
@@ -63,7 +82,7 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
               <div className="flex-1 min-w-0 border-b h-full flex flex-col justify-center" style={{ borderColor: "var(--wa-divider)" }}>
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium truncate flex items-center gap-1" style={{ fontSize: 15.5 }}>
-                    {chat.name}
+                    {NAME_KEYS.includes(chat.id) ? t(`n_${chat.id}`) : chat.name}
                     {chat.verified && <BadgeCheck size={15} style={{ color: "var(--wa-accent)" }} />}
                   </span>
                   <span className="shrink-0" style={{ fontSize: 11.5, color: chat.ai ? "var(--wa-accent)" : "var(--wa-text2)" }}>{chat.time}</span>
@@ -82,7 +101,7 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
           style={{ fontSize: 11.5, color: "var(--wa-text2)" }}
           title="Owner: view activity"
         >
-          🔒 Built by Kushagra · not actually WhatsApp
+          {t("footer")}
         </button>
       </div>
     </div>

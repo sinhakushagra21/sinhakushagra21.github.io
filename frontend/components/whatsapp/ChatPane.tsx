@@ -8,6 +8,9 @@ import Bubble from "./Bubble";
 import AIChat from "./AIChat";
 import RecruiterPane from "./RecruiterPane";
 import WAAvatar from "./WAAvatar";
+import { useLang } from "@/lib/i18n";
+
+const NAME_KEYS = ["recruiter", "experience", "projects", "skills", "education", "contact"];
 
 interface ChatPaneProps {
   chat: WAChat;
@@ -17,6 +20,7 @@ interface ChatPaneProps {
 }
 
 export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPaneProps) {
+  const { t } = useLang();
   const [hintSeen, setHintSeen] = useState(true);
   useEffect(() => { setHintSeen(localStorage.getItem("seen-call-hint-2") === "1"); }, []);
   function callWithHint() {
@@ -38,9 +42,11 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
         </button>
         <WAAvatar emoji={chat.avatar} bg={chat.avatarBg} size={40} />
         <div className="flex-1 min-w-0">
-          <div className="font-semibold truncate" style={{ fontSize: 15.5 }}>{chat.name}</div>
+          <div className="font-semibold truncate" style={{ fontSize: 15.5 }}>
+            {NAME_KEYS.includes(chat.id) ? t(`n_${chat.id}`) : chat.name}
+          </div>
           <div className="truncate" style={{ fontSize: 12.5, color: chat.ai ? "var(--wa-accent)" : "var(--wa-text2)" }}>
-            {chat.header}
+            {chat.ai ? t("online") : chat.header}
           </div>
         </div>
         <div className="flex items-center gap-5" style={{ color: "var(--wa-text2)" }}>
@@ -73,9 +79,7 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
             <div className="relative rounded-2xl px-3.5 py-2.5" style={{ background: "var(--wa-accent)", color: "#04231d", boxShadow: "0 10px 28px rgba(0,0,0,0.45)" }}>
               <span className="absolute -top-1.5 right-16 w-3 h-3 rotate-45" style={{ background: "var(--wa-accent)" }} />
               <div className="flex items-start gap-2">
-                <span style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.35 }}>
-                  📞 New! Tap here to <b>call</b> me and talk out loud.
-                </span>
+                <span style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.35 }}>{t("coach")}</span>
                 <button onClick={dismissHint} aria-label="Dismiss" className="shrink-0 opacity-70 hover:opacity-100" style={{ color: "#04231d" }}>
                   <X size={15} />
                 </button>
@@ -116,13 +120,13 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
                   className="inline-flex items-center gap-2 rounded-full px-4 py-2 transition-colors"
                   style={{ fontSize: 13.5, background: "var(--wa-accent)", color: "#04231d", fontWeight: 600 }}
                 >
-                  <MessageCircle size={16} /> Ask the AI about this
+                  <MessageCircle size={16} /> {t("askAI")}
                 </button>
               </div>
             </div>
             {/* read-only footer */}
-            <div className="flex items-center justify-center px-3 py-3 shrink-0" style={{ background: "var(--wa-header)", color: "var(--wa-text2)", fontSize: 13 }}>
-              This is a scripted thread — tap “Ask the AI” for a real conversation
+            <div className="flex items-center justify-center px-3 py-3 shrink-0 text-center" style={{ background: "var(--wa-header)", color: "var(--wa-text2)", fontSize: 13 }}>
+              {t("scriptedFooter")}
             </div>
           </>
         )}

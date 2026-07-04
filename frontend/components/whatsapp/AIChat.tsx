@@ -6,32 +6,15 @@ import { streamChat, streamTailor } from "@/lib/chat";
 import { Message, Source } from "@/lib/types";
 import { CALENDLY_URL } from "@/lib/calendly";
 import { logEvent, setVisitorPlace } from "@/lib/events";
+import { useLang } from "@/lib/i18n";
 import Bubble from "./Bubble";
 
 let idc = 0;
 const uid = () => `m${++idc}`;
 const now = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-const QUICK = [
-  "Summarize your work experience",
-  "What's your strongest project?",
-  "Open to H1B sponsorship & relocation?",
-  "Why should I interview you?",
-];
-
 const SCHEDULE_INTENT =
   /\b(schedule|book(ing)? a|set ?up a (call|time|meeting|chat)|grab (a )?(time|slot)|find a time|hop on|jump on a call|calendly|can we (talk|chat|connect|meet|call)|let'?s (talk|chat|connect|meet|call)|meet(ing)? with you|talk to you)\b/i;
-
-const GREETING: Message = {
-  id: "greet",
-  role: "assistant",
-  content: "Hey! 👋 I'm Kushagra's AI — ask me anything about my experience, projects, or availability. I answer straight from my notes.",
-};
-const TIPS: Message = {
-  id: "tips",
-  role: "assistant",
-  content: "Quick tip 👇 tap 📞 at the top to *call* me and talk out loud, or the 📎 to grab my résumé, book a call, or tailor my fit to a job description.",
-};
 
 function openCalendly() {
   logEvent("book_call");
@@ -39,7 +22,11 @@ function openCalendly() {
 }
 
 export default function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([GREETING, TIPS]);
+  const { t, lang } = useLang();
+  const [messages, setMessages] = useState<Message[]>(() => [
+    { id: "greet", role: "assistant", content: t("greeting") },
+    { id: "tips", role: "assistant", content: t("tips") },
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -57,6 +44,19 @@ export default function AIChat() {
   }, []);
   useEffect(() => { scrollToBottom(); }, [messages, typing, scrollToBottom]);
 
+  // re-localize the opening messages when language changes (before any chat)
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.some((m) => m.role === "user")
+        ? prev
+        : [
+            { id: "greet", role: "assistant", content: t("greeting") },
+            { id: "tips", role: "assistant", content: t("tips") },
+          ]
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
   // personalized geo greeting (same-origin Vercel geo, ipwho fallback)
   useEffect(() => {
     let active = true;
@@ -66,7 +66,7 @@ export default function AIChat() {
       logEvent("visit", "");
       setMessages((p) =>
         p.some((m) => m.id === "geo") ? p
-          : [...p, { id: "geo", role: "assistant", content: `PS — looks like you're visiting from ${place} 👀 it's ${now()} your time. Thanks for stopping by!` }]
+          : [...p, { id: "geo", role: "assistant", content: t("geo", { place, time: now() }) }]
       );
     };
     (async () => {
@@ -186,7 +186,7 @@ export default function AIChat() {
 
         {!messages.some((m) => m.role === "user") && (
           <div className="flex flex-wrap gap-2 justify-center px-3 pt-3">
-            {QUICK.map((q) => (
+            {[t("q_exp"), t("q_proj"), t("q_reloc"), t("q_interview")].map((q) => (
               <button key={q} onClick={() => submit(q)} className="rounded-full px-3 py-1.5 transition-colors" style={{ fontSize: 13, border: "1px solid var(--wa-accent)", color: "var(--wa-accent)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,168,132,0.12)")} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
                 {q}
@@ -230,7 +230,7 @@ export default function AIChat() {
         <button onClick={() => setAttachOpen((o) => !o)} aria-label="Attach" style={{ color: "var(--wa-text2)" }} className="shrink-0 p-1">
           <Paperclip size={22} style={{ transform: attachOpen ? "rotate(45deg)" : "none", transition: "transform 0.2s" }} />
         </button>
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} placeholder="Type a message"
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} placeholder={t("typeMessage")}
           className="flex-1 rounded-lg px-4 outline-none" style={{ height: 42, background: "var(--wa-in)", color: "var(--wa-text)", fontSize: 14.5 }} />
         <button onClick={() => submit()} disabled={loading || !input.trim()} className="flex items-center justify-center rounded-full shrink-0 disabled:opacity-40" style={{ width: 42, height: 42, background: "var(--wa-accent)", color: "#04231d" }} aria-label="Send">
           <Send size={18} />

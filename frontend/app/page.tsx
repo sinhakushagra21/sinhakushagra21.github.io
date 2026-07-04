@@ -1,7 +1,12 @@
 "use client";
 
 import WhatsAppApp from "@/components/whatsapp/WhatsAppApp";
+import { LangProvider } from "@/lib/i18n";
 
 export default function Home() {
-  return <WhatsAppApp />;
+  return (
+    <LangProvider>
+      <WhatsAppApp />
+    </LangProvider>
+  );
 }

@@ -5,6 +5,7 @@ import { Target, Calendar, X } from "lucide-react";
 import { streamTailor } from "@/lib/chat";
 import { CALENDLY_URL } from "@/lib/calendly";
 import { logEvent } from "@/lib/events";
+import { useLang } from "@/lib/i18n";
 import Bubble from "./Bubble";
 
 interface Msg { id: string; from: "them" | "me"; text: string }
@@ -12,8 +13,9 @@ let c = 0;
 const uid = () => `r${++c}`;
 
 export default function RecruiterPane() {
+  const { t } = useLang();
   const [messages, setMessages] = useState<Msg[]>([
-    { id: "intro", from: "them", text: "Hi! 👋 Two quick things I can do for you as a recruiter — check how I fit a specific role, or set up a screening call. Pick one 👇" },
+    { id: "intro", from: "them", text: t("recIntro") },
   ]);
   const [jdOpen, setJdOpen] = useState(false);
   const [jd, setJd] = useState("");
@@ -81,8 +83,8 @@ export default function RecruiterPane() {
             >
               <span className="flex items-center justify-center rounded-full shrink-0" style={{ width: 38, height: 38, background: "#8a63d2" }}><Target size={18} color="#fff" /></span>
               <span className="text-left">
-                <span className="block font-medium" style={{ fontSize: 14.5 }}>Check my fit for a job</span>
-                <span className="block" style={{ fontSize: 12.5, color: "var(--wa-text2)" }}>paste a JD → honest, tailored pitch</span>
+                <span className="block font-medium" style={{ fontSize: 14.5 }}>{t("recFit")}</span>
+                <span className="block" style={{ fontSize: 12.5, color: "var(--wa-text2)" }}>{t("recFitSub")}</span>
               </span>
             </button>
             <button
@@ -94,8 +96,8 @@ export default function RecruiterPane() {
             >
               <span className="flex items-center justify-center rounded-full shrink-0" style={{ width: 38, height: 38, background: "#00a884" }}><Calendar size={18} color="#fff" /></span>
               <span className="text-left">
-                <span className="block font-medium" style={{ fontSize: 14.5 }}>Schedule a screening (Google Meet)</span>
-                <span className="block" style={{ fontSize: 12.5, color: "var(--wa-text2)" }}>grab a 30-min slot on my calendar</span>
+                <span className="block font-medium" style={{ fontSize: 14.5 }}>{t("recSched")}</span>
+                <span className="block" style={{ fontSize: 12.5, color: "var(--wa-text2)" }}>{t("recSchedSub")}</span>
               </span>
             </button>
           </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { streamChat } from "@/lib/chat";
 import { logEvent } from "@/lib/events";
+import { useLang } from "@/lib/i18n";
 import WAAvatar from "./WAAvatar";
 
 type Status = "connecting" | "listening" | "thinking" | "speaking" | "error";
@@ -13,6 +14,7 @@ type Status = "connecting" | "listening" | "thinking" | "speaking" | "error";
 type AnyRec = any;
 
 export default function CallScreen({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t, stt } = useLang();
   const [status, setStatus] = useState<Status>("connecting");
   const [caption, setCaption] = useState(""); // what the visitor is saying
   const [reply, setReply] = useState(""); // what the AI says
@@ -42,13 +44,14 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
       synth.cancel();
       const u = new SpeechSynthesisUtterance(text.replace(/[*_#`]/g, ""));
       u.rate = 1.0;
+      u.lang = stt;
       const voices = voicesRef.current.length ? voicesRef.current : synth.getVoices();
-      // a clean, natural English voice (browser default is a fine fallback)
+      const pref = stt.slice(0, 2).toLowerCase();
+      // match the selected language; fall back to a clean English voice
       const v =
+        (pref !== "en" ? voices.find((x) => x.lang.toLowerCase().startsWith(pref)) : undefined) ||
         voices.find((x) => /Google US English/i.test(x.name)) ||
-        voices.find((x) => /Samantha|Aaron|Google UK English/i.test(x.name)) ||
         voices.find((x) => /en[-_]US/i.test(x.lang)) ||
-        voices.find((x) => /en[-_]GB/i.test(x.lang)) ||
         voices.find((x) => /^en/i.test(x.lang));
       if (v) u.voice = v;
       u.onend = after;
@@ -105,7 +108,7 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
     if (!SR) { setSupported(false); setStatus("error"); return; }
 
     const rec = new SR();
-    rec.lang = "en-US";
+    rec.lang = stt;
     rec.interimResults = true;
     rec.continuous = false;
     rec.maxAlternatives = 1;
@@ -123,11 +126,11 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
     recRef.current = rec;
 
     logEvent("voice_call");
-    const t = setInterval(() => setElapsed((s) => s + 1), 1000);
-    speak("Hi! You're on a call with Kushagra's AI. Ask me anything about my work, projects, or availability.", () => openRef.current && listen());
+    const timer = setInterval(() => setElapsed((s) => s + 1), 1000);
+    speak(t("callGreeting"), () => openRef.current && listen());
 
     return () => {
-      clearInterval(t);
+      clearInterval(timer);
       try { rec.stop(); } catch {}
       window.speechSynthesis.cancel();
     };
@@ -150,10 +153,10 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
   }
 
   const label = !supported ? "Voice isn't supported in this browser" :
-    status === "connecting" ? "Connecting…" :
-    status === "listening" ? "Listening…" :
-    status === "thinking" ? "Thinking…" :
-    status === "speaking" ? "Speaking…" : "";
+    status === "connecting" ? t("callConnecting") :
+    status === "listening" ? t("callListening") :
+    status === "thinking" ? t("callThinking") :
+    status === "speaking" ? t("callSpeaking") : "";
 
   const active = status === "listening" || status === "speaking";
   const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
@@ -192,7 +195,7 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
                 <>
                   {caption && <p className="text-white/55 italic" style={{ fontSize: 13 }}>“{caption}”</p>}
                   {reply && <p className="text-white mt-1" style={{ fontSize: 14, lineHeight: 1.4 }}>{reply}</p>}
-                  {!caption && !reply && <p className="text-white/45" style={{ fontSize: 13 }}>Speak whenever — I&apos;m listening.</p>}
+                  {!caption && !reply && <p className="text-white/45" style={{ fontSize: 13 }}>{t("callPrompt")}</p>}
                 </>
               )}
             </div>
@@ -210,7 +213,7 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
             </div>
 
             <p className="text-center text-white/40 leading-snug pt-1" style={{ fontSize: 11 }}>
-              🔒 Private — nothing is recorded or stored. Speech is handled by your browser.
+              {t("callPrivacy")}
             </p>
           </div>
         </motion.div>
