@@ -1,8 +1,10 @@
+import os
 from collections import defaultdict
 from time import time
 
 _requests: dict[str, list[float]] = defaultdict(list)
-LIMIT = 10
+# per-IP requests allowed per WINDOW. Overridable via env (RATE_LIMIT).
+LIMIT = int(os.getenv("RATE_LIMIT", "40"))
 WINDOW = 3600  # 1 hour
 
 
