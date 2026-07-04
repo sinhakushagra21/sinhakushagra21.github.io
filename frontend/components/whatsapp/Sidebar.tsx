@@ -33,8 +33,8 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
             className="rounded-full shrink-0"
             style={{ padding: 2, background: "conic-gradient(from 135deg, #00a884, #25d366, #53bdeb, #00a884)" }}
           >
-            <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, background: "var(--wa-accent)", color: "#04231d", fontWeight: 700, border: "2px solid var(--wa-header)" }}>
-              KS
+            <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, background: "#0b3d34", fontSize: 20, border: "2px solid var(--wa-header)" }}>
+              👨🏻‍💻
             </div>
           </button>
           <div className="min-w-0">

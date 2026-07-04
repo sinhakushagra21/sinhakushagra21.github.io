@@ -26,8 +26,8 @@ export const CHATS: WAChat[] = [
   {
     id: "ai",
     name: "Kushagra Sinha",
-    avatar: "K",
-    avatarBg: "#00a884",
+    avatar: "👨🏻‍💻",
+    avatarBg: "#0b3d34",
     blurb: "Ask me anything — I answer from my notes 🤖",
     time: "now",
     pinned: true,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, MoreVertical, Phone, MessageCircle } from "lucide-react";
 import { WAChat } from "./data";
@@ -15,6 +16,14 @@ interface ChatPaneProps {
 }
 
 export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPaneProps) {
+  const [hintSeen, setHintSeen] = useState(true);
+  useEffect(() => { setHintSeen(localStorage.getItem("seen-call-hint") === "1"); }, []);
+  function callWithHint() {
+    localStorage.setItem("seen-call-hint", "1");
+    setHintSeen(true);
+    onCall();
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* header */}
@@ -33,8 +42,14 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
         </div>
         <div className="flex items-center gap-5" style={{ color: "var(--wa-text2)" }}>
           {chat.ai ? (
-            <button onClick={onCall} aria-label="Voice call with the AI" title="Voice call" className="transition-colors hover:text-[color:var(--wa-accent)]">
+            <button onClick={callWithHint} aria-label="Voice call with the AI" title="Voice call — talk to me out loud" className="relative transition-colors hover:text-[color:var(--wa-accent)]">
               <Phone size={19} />
+              {!hintSeen && (
+                <span className="absolute -top-1.5 -right-1.5 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "var(--wa-accent)" }} />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--wa-accent)" }} />
+                </span>
+              )}
             </button>
           ) : (
             <Phone size={18} className="hidden sm:block" />

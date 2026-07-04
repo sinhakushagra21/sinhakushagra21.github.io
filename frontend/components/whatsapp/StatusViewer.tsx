@@ -83,7 +83,7 @@ export default function StatusViewer({
 
             {/* header */}
             <div className="flex items-center gap-3 px-4 py-3">
-              <div className="flex items-center justify-center rounded-full" style={{ width: 36, height: 36, background: "#00a884", color: "#04231d", fontWeight: 700, fontSize: 13 }}>KS</div>
+              <div className="flex items-center justify-center rounded-full" style={{ width: 36, height: 36, background: "#0b3d34", fontSize: 18 }}>👨🏻‍💻</div>
               <div className="flex-1">
                 <div className="text-white font-semibold" style={{ fontSize: 14 }}>Kushagra Sinha</div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>my status · tap to skip</div>

@@ -27,6 +27,11 @@ const GREETING: Message = {
   role: "assistant",
   content: "Hey! 👋 I'm Kushagra's AI — ask me anything about my experience, projects, or availability. I answer straight from my notes.",
 };
+const TIPS: Message = {
+  id: "tips",
+  role: "assistant",
+  content: "Quick tip 👇 tap 📞 at the top to *call* me and talk out loud, or the 📎 to grab my résumé, book a call, or tailor my fit to a job description.",
+};
 
 function openCalendly() {
   logEvent("book_call");
@@ -34,7 +39,7 @@ function openCalendly() {
 }
 
 export default function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([GREETING]);
+  const [messages, setMessages] = useState<Message[]>([GREETING, TIPS]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -120,7 +125,7 @@ export default function AIChat() {
     }
 
     const history = [...messages, userMsg]
-      .filter((m) => m.id !== "greet" && m.id !== "geo")
+      .filter((m) => m.id !== "greet" && m.id !== "geo" && m.id !== "tips")
       .map((m) => ({ role: m.role, content: m.content }));
     await runStream((cb) => streamChat(history, cb));
   }
@@ -179,7 +184,7 @@ export default function AIChat() {
           </Bubble>
         )}
 
-        {messages.length <= 2 && (
+        {!messages.some((m) => m.role === "user") && (
           <div className="flex flex-wrap gap-2 justify-center px-3 pt-3">
             {QUICK.map((q) => (
               <button key={q} onClick={() => submit(q)} className="rounded-full px-3 py-1.5 transition-colors" style={{ fontSize: 13, border: "1px solid var(--wa-accent)", color: "var(--wa-accent)" }}

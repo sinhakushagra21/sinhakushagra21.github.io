@@ -23,16 +23,31 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
   const history = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
   const openRef = useRef(open);
   const mutedRef = useRef(muted);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
   useEffect(() => { openRef.current = open; }, [open]);
   useEffect(() => { mutedRef.current = muted; }, [muted]);
+
+  // preload TTS voices (they populate asynchronously)
+  useEffect(() => {
+    const load = () => { voicesRef.current = window.speechSynthesis?.getVoices() ?? []; };
+    load();
+    window.speechSynthesis?.addEventListener?.("voiceschanged", load);
+    return () => window.speechSynthesis?.removeEventListener?.("voiceschanged", load);
+  }, []);
 
   function speak(text: string, after: () => void) {
     try {
       const synth = window.speechSynthesis;
       synth.cancel();
       const u = new SpeechSynthesisUtterance(text.replace(/[*_#`]/g, ""));
-      u.rate = 1.05;
-      const v = synth.getVoices().find((x) => /en[-_]?(US|GB)/i.test(x.lang));
+      u.rate = 1.0;
+      const voices = voicesRef.current.length ? voicesRef.current : synth.getVoices();
+      // prefer an Indian-English voice, then any named Indian voice, then any English voice
+      const v =
+        voices.find((x) => /en[-_]IN/i.test(x.lang)) ||
+        voices.find((x) => /india|indian|rishi|heera|kalpana|priya/i.test(x.name)) ||
+        voices.find((x) => /^hi[-_]/i.test(x.lang)) ||
+        voices.find((x) => /en[-_](GB|US)/i.test(x.lang));
       if (v) u.voice = v;
       u.onend = after;
       u.onerror = after;
@@ -146,50 +161,51 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[90] flex flex-col items-center justify-between py-14"
-          style={{ background: "linear-gradient(160deg,#0b2b24,#04231d 60%,#0b141a)" }}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="fixed z-[90] bottom-4 right-4 w-[340px] max-w-[calc(100vw-1.5rem)] rounded-2xl overflow-hidden"
+          style={{ background: "linear-gradient(160deg,#0b2b24,#04231d 65%,#0b141a)", boxShadow: "0 14px 44px rgba(0,0,0,0.55)", border: "1px solid rgba(255,255,255,0.08)" }}
+          initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: 0.96 }}
         >
-          {/* top: identity */}
-          <div className="flex flex-col items-center gap-2">
-            <div className="text-white/70" style={{ fontSize: 13 }}>{supported ? `voice call · ${mm}:${ss}` : "voice call"}</div>
-            <div className="text-white font-semibold" style={{ fontSize: 22 }}>Kushagra&apos;s AI</div>
-            <div className="text-white/60" style={{ fontSize: 14 }}>{label}</div>
-          </div>
+          <div className="p-4 flex flex-col items-center gap-3">
+            <div className="w-full text-center text-white/60" style={{ fontSize: 12 }}>
+              {supported ? `🔊 voice call · ${mm}:${ss}` : "voice call"}
+            </div>
 
-          {/* avatar with pulse */}
-          <div className="relative flex items-center justify-center">
-            {active && (
-              <motion.span className="absolute rounded-full" style={{ width: 150, height: 150, background: "#00a884", opacity: 0.25 }}
-                animate={{ scale: [1, 1.35, 1], opacity: [0.25, 0, 0.25] }} transition={{ duration: 1.8, repeat: Infinity }} />
-            )}
-            <div className="relative flex items-center justify-center rounded-full" style={{ width: 130, height: 130, background: "#00a884", color: "#04231d", fontSize: 52, fontWeight: 700 }}>K</div>
-          </div>
+            <div className="relative flex items-center justify-center">
+              {active && (
+                <motion.span className="absolute rounded-full" style={{ width: 92, height: 92, background: "#00a884", opacity: 0.25 }}
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.25, 0, 0.25] }} transition={{ duration: 1.8, repeat: Infinity }} />
+              )}
+              <div className="relative flex items-center justify-center rounded-full" style={{ width: 78, height: 78, background: "#0b3d34", fontSize: 38 }}>👨🏻‍💻</div>
+            </div>
 
-          {/* captions */}
-          <div className="px-6 text-center min-h-[90px] max-w-xl">
-            {!supported ? (
-              <p className="text-white/80" style={{ fontSize: 15 }}>Your browser blocks speech recognition. Try Chrome, or just type in the chat instead.</p>
-            ) : (
-              <>
-                {caption && <p className="text-white/60 italic" style={{ fontSize: 15 }}>“{caption}”</p>}
-                {reply && <p className="text-white mt-2" style={{ fontSize: 16, lineHeight: 1.45 }}>{reply}</p>}
-                {!caption && !reply && <p className="text-white/50" style={{ fontSize: 14 }}>Speak after the beep — I&apos;m listening.</p>}
-              </>
-            )}
-          </div>
+            <div className="text-center">
+              <div className="text-white font-semibold" style={{ fontSize: 16 }}>Kushagra&apos;s AI</div>
+              <div className="text-white/60" style={{ fontSize: 13 }}>{label}</div>
+            </div>
 
-          {/* controls */}
-          <div className="flex items-center gap-6">
-            <button onClick={toggleMute} disabled={!supported}
-              className="flex items-center justify-center rounded-full disabled:opacity-40"
-              style={{ width: 60, height: 60, background: muted ? "#fff" : "rgba(255,255,255,0.15)", color: muted ? "#04231d" : "#fff" }}
-              aria-label={muted ? "Unmute" : "Mute"}>
-              {muted ? <MicOff size={24} /> : <Mic size={24} />}
-            </button>
-            <button onClick={end} className="flex items-center justify-center rounded-full" style={{ width: 68, height: 68, background: "#f15c6d", color: "#fff" }} aria-label="End call">
-              <PhoneOff size={26} />
-            </button>
+            <div className="w-full text-center overflow-y-auto" style={{ maxHeight: 108 }} data-lenis-prevent>
+              {!supported ? (
+                <p className="text-white/80" style={{ fontSize: 13 }}>This browser blocks speech recognition — try Chrome, or just type in the chat.</p>
+              ) : (
+                <>
+                  {caption && <p className="text-white/55 italic" style={{ fontSize: 13 }}>“{caption}”</p>}
+                  {reply && <p className="text-white mt-1" style={{ fontSize: 14, lineHeight: 1.4 }}>{reply}</p>}
+                  {!caption && !reply && <p className="text-white/45" style={{ fontSize: 13 }}>Speak whenever — I&apos;m listening.</p>}
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4 pt-1">
+              <button onClick={toggleMute} disabled={!supported}
+                className="flex items-center justify-center rounded-full disabled:opacity-40"
+                style={{ width: 48, height: 48, background: muted ? "#fff" : "rgba(255,255,255,0.15)", color: muted ? "#04231d" : "#fff" }}
+                aria-label={muted ? "Unmute" : "Mute"}>
+                {muted ? <MicOff size={20} /> : <Mic size={20} />}
+              </button>
+              <button onClick={end} className="flex items-center justify-center rounded-full" style={{ width: 54, height: 54, background: "#f15c6d", color: "#fff" }} aria-label="End call">
+                <PhoneOff size={22} />
+              </button>
+            </div>
           </div>
         </motion.div>
       )}
