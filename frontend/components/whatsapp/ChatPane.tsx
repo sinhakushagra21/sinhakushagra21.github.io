@@ -18,14 +18,14 @@ interface ChatPaneProps {
 
 export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPaneProps) {
   const [hintSeen, setHintSeen] = useState(true);
-  useEffect(() => { setHintSeen(localStorage.getItem("seen-call-hint") === "1"); }, []);
+  useEffect(() => { setHintSeen(localStorage.getItem("seen-call-hint-2") === "1"); }, []);
   function callWithHint() {
-    localStorage.setItem("seen-call-hint", "1");
+    localStorage.setItem("seen-call-hint-2", "1");
     setHintSeen(true);
     onCall();
   }
   function dismissHint() {
-    localStorage.setItem("seen-call-hint", "1");
+    localStorage.setItem("seen-call-hint-2", "1");
     setHintSeen(true);
   }
 
