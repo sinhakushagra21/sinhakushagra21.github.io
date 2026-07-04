@@ -338,6 +338,65 @@
   .wobble { animation: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   WhatsApp-style scope — self-contained dark chat-app theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* the site is now the chat app — keep the page dark (no cream flash / bounce) */
+body { background: #0b141a; overscroll-behavior: none; }
+
+.wa-app {
+  --wa-bg: #0b141a;
+  --wa-panel: #111b21;
+  --wa-header: #202c33;
+  --wa-in: #202c33;      /* incoming bubble */
+  --wa-out: #005c4b;     /* outgoing bubble */
+  --wa-accent: #00a884;
+  --wa-text: #e9edef;
+  --wa-text2: #8696a0;
+  --wa-hover: #202c33;
+  --wa-active: #2a3942;
+  --wa-divider: #222d34;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--wa-text);
+}
+
+/* the doodle wallpaper behind the conversation */
+.wa-wallpaper {
+  background-color: #0b141a;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%238696a0' stroke-width='1.2' opacity='0.05'%3E%3Ccircle cx='20' cy='24' r='7'/%3E%3Cpath d='M60 18h16v14H60z'/%3E%3Cpath d='M104 20l8 8-8 8-8-8z'/%3E%3Cpath d='M18 70q10-12 20 0t20 0'/%3E%3Ccircle cx='96' cy='74' r='9'/%3E%3Cpath d='M120 64v20M110 74h20'/%3E%3Cpath d='M24 112h18v14H24z'/%3E%3Cpath d='M70 108l7 12-14 0z'/%3E%3Ccircle cx='116' cy='116' r='7'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* thin dark scrollbars inside the app */
+.wa-app ::-webkit-scrollbar { width: 6px; }
+.wa-app ::-webkit-scrollbar-thumb { background: #374248; border-radius: 3px; }
+.wa-app ::-webkit-scrollbar-track { background: transparent; }
+
+/* incoming/outgoing bubble tails */
+.wa-bubble { position: relative; }
+.wa-bubble-in::before,
+.wa-bubble-out::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 13px;
+}
+.wa-bubble-in::before {
+  left: -8px;
+  background: var(--wa-in);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+.wa-bubble-out::before {
+  right: -8px;
+  background: var(--wa-out);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+@keyframes wa-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
 /* ── Chalkboard scope (the chat surface) ───────────────────────────────────────
    Re-maps the design tokens to a slate board + chalk so every chat sub-component
    inherits the look without per-component rewrites. Fixed palette in BOTH site

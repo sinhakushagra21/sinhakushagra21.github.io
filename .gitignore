@@ -29,3 +29,4 @@ Thumbs.db
 
 # private visitor notes (not committed)
 backend/data/notes.json
+backend/data/events.json

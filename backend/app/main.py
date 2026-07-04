@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from app.api.chat import router as chat_router
 from app.api.tailor import router as tailor_router
 from app.api.notes import router as notes_router
+from app.api.events import router as events_router
 
 load_dotenv()
 
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(chat_router, prefix="/api")
 app.include_router(tailor_router, prefix="/api")
 app.include_router(notes_router, prefix="/api")
+app.include_router(events_router, prefix="/api")
 
 
 @app.get("/health")
