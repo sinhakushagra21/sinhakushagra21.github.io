@@ -2,16 +2,10 @@
 
 import { Search, Pin, BadgeCheck } from "lucide-react";
 import { CHATS, WAChat } from "./data";
+import WAAvatar from "./WAAvatar";
 
 function Avatar({ chat, size = 49 }: { chat: WAChat; size?: number }) {
-  return (
-    <div
-      className="shrink-0 flex items-center justify-center rounded-full"
-      style={{ width: size, height: size, background: chat.avatarBg, fontSize: size * 0.42, color: "#fff", fontWeight: 600 }}
-    >
-      {chat.avatar}
-    </div>
-  );
+  return <WAAvatar emoji={chat.avatar} bg={chat.avatarBg} size={size} />;
 }
 
 interface SidebarProps {
@@ -33,9 +27,7 @@ export default function Sidebar({ activeId, onSelect, onOpenStatus, onOpenActivi
             className="rounded-full shrink-0"
             style={{ padding: 2, background: "conic-gradient(from 135deg, #00a884, #25d366, #53bdeb, #00a884)" }}
           >
-            <div className="flex items-center justify-center rounded-full" style={{ width: 40, height: 40, background: "#0b3d34", fontSize: 20, border: "2px solid var(--wa-header)" }}>
-              👨🏻‍💻
-            </div>
+            <WAAvatar emoji="👨‍💻" bg="#0b3d34" size={40} />
           </button>
           <div className="min-w-0">
             <div className="font-semibold truncate" style={{ fontSize: 15 }}>Kushagra Sinha</div>

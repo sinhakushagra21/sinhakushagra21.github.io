@@ -6,7 +6,8 @@ import { ArrowLeft, Search, MoreVertical, Phone, MessageCircle, X } from "lucide
 import { WAChat } from "./data";
 import Bubble from "./Bubble";
 import AIChat from "./AIChat";
-import StatusCard from "./StatusCard";
+import RecruiterPane from "./RecruiterPane";
+import WAAvatar from "./WAAvatar";
 
 interface ChatPaneProps {
   chat: WAChat;
@@ -35,9 +36,7 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
         <button className="md:hidden" onClick={onBack} aria-label="Back" style={{ color: "var(--wa-text)" }}>
           <ArrowLeft size={22} />
         </button>
-        <div className="flex items-center justify-center rounded-full shrink-0" style={{ width: 40, height: 40, background: chat.avatarBg, fontSize: 17, fontWeight: 600, color: "#fff" }}>
-          {chat.avatar}
-        </div>
+        <WAAvatar emoji={chat.avatar} bg={chat.avatarBg} size={40} />
         <div className="flex-1 min-w-0">
           <div className="font-semibold truncate" style={{ fontSize: 15.5 }}>{chat.name}</div>
           <div className="truncate" style={{ fontSize: 12.5, color: chat.ai ? "var(--wa-accent)" : "var(--wa-text2)" }}>
@@ -90,8 +89,8 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
       <div className="relative flex-1 flex flex-col min-h-0 wa-wallpaper">
         {chat.ai ? (
           <AIChat />
-        ) : chat.id === "status" ? (
-          <StatusCard />
+        ) : chat.id === "recruiter" ? (
+          <RecruiterPane />
         ) : (
           <>
             <div className="flex-1 overflow-y-auto py-4 space-y-2" data-lenis-prevent>

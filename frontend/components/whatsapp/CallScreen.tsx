@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 import { streamChat } from "@/lib/chat";
 import { logEvent } from "@/lib/events";
+import WAAvatar from "./WAAvatar";
 
 type Status = "connecting" | "listening" | "thinking" | "speaking" | "error";
 
@@ -176,7 +177,7 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
                 <motion.span className="absolute rounded-full" style={{ width: 92, height: 92, background: "#00a884", opacity: 0.25 }}
                   animate={{ scale: [1, 1.3, 1], opacity: [0.25, 0, 0.25] }} transition={{ duration: 1.8, repeat: Infinity }} />
               )}
-              <div className="relative flex items-center justify-center rounded-full" style={{ width: 78, height: 78, background: "#0b3d34", fontSize: 38 }}>👨🏻‍💻</div>
+              <WAAvatar emoji="👨‍💻" bg="#0b3d34" size={78} />
             </div>
 
             <div className="text-center">
