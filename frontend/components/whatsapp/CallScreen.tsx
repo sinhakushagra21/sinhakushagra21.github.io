@@ -42,12 +42,13 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
       const u = new SpeechSynthesisUtterance(text.replace(/[*_#`]/g, ""));
       u.rate = 1.0;
       const voices = voicesRef.current.length ? voicesRef.current : synth.getVoices();
-      // prefer an Indian-English voice, then any named Indian voice, then any English voice
+      // a clean, natural English voice (browser default is a fine fallback)
       const v =
-        voices.find((x) => /en[-_]IN/i.test(x.lang)) ||
-        voices.find((x) => /india|indian|rishi|heera|kalpana|priya/i.test(x.name)) ||
-        voices.find((x) => /^hi[-_]/i.test(x.lang)) ||
-        voices.find((x) => /en[-_](GB|US)/i.test(x.lang));
+        voices.find((x) => /Google US English/i.test(x.name)) ||
+        voices.find((x) => /Samantha|Aaron|Google UK English/i.test(x.name)) ||
+        voices.find((x) => /en[-_]US/i.test(x.lang)) ||
+        voices.find((x) => /en[-_]GB/i.test(x.lang)) ||
+        voices.find((x) => /^en/i.test(x.lang));
       if (v) u.voice = v;
       u.onend = after;
       u.onerror = after;
@@ -206,6 +207,10 @@ export default function CallScreen({ open, onClose }: { open: boolean; onClose: 
                 <PhoneOff size={22} />
               </button>
             </div>
+
+            <p className="text-center text-white/40 leading-snug pt-1" style={{ fontSize: 11 }}>
+              🔒 Private — nothing is recorded or stored. Speech is handled by your browser.
+            </p>
           </div>
         </motion.div>
       )}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Search, MoreVertical, Phone, MessageCircle } from "lucide-react";
+import { ArrowLeft, Search, MoreVertical, Phone, MessageCircle, X } from "lucide-react";
 import { WAChat } from "./data";
 import Bubble from "./Bubble";
 import AIChat from "./AIChat";
@@ -23,11 +23,15 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
     setHintSeen(true);
     onCall();
   }
+  function dismissHint() {
+    localStorage.setItem("seen-call-hint", "1");
+    setHintSeen(true);
+  }
 
   return (
     <div className="flex flex-col h-full">
       {/* header */}
-      <div className="flex items-center gap-3 px-3 shrink-0 z-10" style={{ height: 60, background: "var(--wa-header)" }}>
+      <div className="relative flex items-center gap-3 px-3 shrink-0 z-10" style={{ height: 60, background: "var(--wa-header)" }}>
         <button className="md:hidden" onClick={onBack} aria-label="Back" style={{ color: "var(--wa-text)" }}>
           <ArrowLeft size={22} />
         </button>
@@ -57,6 +61,29 @@ export default function ChatPane({ chat, onBack, onOpenAI, onCall }: ChatPanePro
           <Search size={18} className="hidden sm:block" />
           <MoreVertical size={18} />
         </div>
+
+        {/* first-visit coach mark pointing at the call button */}
+        {chat.ai && !hintSeen && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.7, type: "spring", stiffness: 300, damping: 22 }}
+            className="absolute z-30"
+            style={{ top: 60, right: 8, maxWidth: 236 }}
+          >
+            <div className="relative rounded-2xl px-3.5 py-2.5" style={{ background: "var(--wa-accent)", color: "#04231d", boxShadow: "0 10px 28px rgba(0,0,0,0.45)" }}>
+              <span className="absolute -top-1.5 right-16 w-3 h-3 rotate-45" style={{ background: "var(--wa-accent)" }} />
+              <div className="flex items-start gap-2">
+                <span style={{ fontSize: 13.5, fontWeight: 600, lineHeight: 1.35 }}>
+                  📞 New! Tap here to <b>call</b> me and talk out loud.
+                </span>
+                <button onClick={dismissHint} aria-label="Dismiss" className="shrink-0 opacity-70 hover:opacity-100" style={{ color: "#04231d" }}>
+                  <X size={15} />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* body */}
