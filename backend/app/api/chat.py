@@ -55,19 +55,23 @@ async def _stream(
     for m in messages:
         openai_messages.append({"role": m.role, "content": m.content})
 
-    stream = await _openai().chat.completions.create(
-        model=MODEL,
-        messages=openai_messages,
-        stream=True,
-        temperature=0.7,
-        max_tokens=1024,
-    )
-
-    async for event in stream:
-        delta = event.choices[0].delta
-        if delta.content:
-            payload = {"type": "token", "text": delta.content}
-            yield f"data: {json.dumps(payload)}\n\n"
+    try:
+        stream = await _openai().chat.completions.create(
+            model=MODEL,
+            messages=openai_messages,
+            stream=True,
+            temperature=0.7,
+            max_tokens=1024,
+        )
+        async for event in stream:
+            delta = event.choices[0].delta
+            if delta.content:
+                payload = {"type": "token", "text": delta.content}
+                yield f"data: {json.dumps(payload)}\n\n"
+    except Exception as e:  # noqa: BLE001 — surface any AI failure as a friendly message
+        print(f"[chat] OpenAI error: {e}")
+        err = {"type": "error", "text": "I'm having trouble reaching my AI right now — please try again shortly, or email me at kushagra.2198@gmail.com."}
+        yield f"data: {json.dumps(err)}\n\n"
 
     yield 'data: {"type":"done"}\n\n'
 
@@ -82,7 +86,7 @@ async def chat(request: Request, body: ChatRequest):
         async def rate_limit_stream():
             msg = {
                 "type": "error",
-                "text": f"I've hit my message limit for this hour (10 questions/hr to keep API costs sane). Try again in {reset_in // 60} min, or email me at kushagra.2198@gmail.com.",
+                "text": f"I've hit my hourly message limit (keeps API costs sane). Try again in {reset_in // 60} min, or email me at kushagra.2198@gmail.com.",
             }
             yield f"data: {json.dumps(msg)}\n\n"
             yield 'data: {"type":"done"}\n\n'
@@ -101,9 +105,10 @@ async def chat(request: Request, body: ChatRequest):
     try:
         query_embedding = await embed_text(retrieval_query)
         chunks = retrieve(query_embedding, k=7)
-    except RuntimeError as e:
+    except Exception as e:  # noqa: BLE001 — embeddings/KB failure → friendly message
+        print(f"[chat] retrieval/embed error: {e}")
         async def kb_error_stream():
-            yield f'data: {{"type":"error","text":"Knowledge base not ready: {e}"}}\n\n'
+            yield 'data: {"type":"error","text":"I\'m having trouble reaching my AI right now — please try again shortly, or email me at kushagra.2198@gmail.com."}\n\n'
             yield 'data: {"type":"done"}\n\n'
         return StreamingResponse(kb_error_stream(), media_type="text/event-stream")
 

@@ -63,20 +63,24 @@ async def _stream(jd: str, chunks: list[dict]) -> AsyncIterator[str]:
     yield 'data: {"type":"status","text":"Reading the job description..."}\n\n'
     yield 'data: {"type":"status","text":"Matching it to my background..."}\n\n'
 
-    stream = await _openai().chat.completions.create(
-        model=MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Write the tailored pitch for this role."},
-        ],
-        stream=True,
-        temperature=0.6,
-        max_tokens=700,
-    )
-    async for event in stream:
-        delta = event.choices[0].delta
-        if delta.content:
-            yield f'data: {json.dumps({"type": "token", "text": delta.content})}\n\n'
+    try:
+        stream = await _openai().chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Write the tailored pitch for this role."},
+            ],
+            stream=True,
+            temperature=0.6,
+            max_tokens=700,
+        )
+        async for event in stream:
+            delta = event.choices[0].delta
+            if delta.content:
+                yield f'data: {json.dumps({"type": "token", "text": delta.content})}\n\n'
+    except Exception as e:  # noqa: BLE001
+        print(f"[tailor] OpenAI error: {e}")
+        yield 'data: {"type":"error","text":"I\'m having trouble reaching my AI right now — please try again shortly, or email me at kushagra.2198@gmail.com."}\n\n'
 
     yield 'data: {"type":"done"}\n\n'
 
